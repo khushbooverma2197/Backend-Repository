@@ -6,7 +6,12 @@ exports.getAllDestinations = async (req, res) => {
     const destinations = await Destination.getAll();
     res.json(destinations);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch destinations' });
+    console.error('Error fetching destinations:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch destinations',
+      details: error.message,
+      hint: error.hint || 'Check server logs'
+    });
   }
 };
 
