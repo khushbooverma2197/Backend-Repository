@@ -1,18 +1,29 @@
 // Utility to convert between frontend (camelCase) and database (snake_case) for journals
 
 const toDatabase = (journal) => {
-  return {
+  const dbJournal = {
     destination_id: journal.destinationId,
-    user_id: journal.userId || 1, // Default user ID if not provided
+    user_id: journal.userId || 1,
     title: journal.title,
     content: journal.content,
-    visit_date: journal.visitDate,
-    rating: journal.rating,
-    photos: journal.photos,
-    highlights: journal.highlights,
-    is_public: journal.isPublic,
-    created_at: journal.createdAt || new Date().toISOString()
+    rating: parseInt(journal.rating) || 5,
+    is_public: Boolean(journal.isPublic)
   };
+
+  // Only add optional fields if they have values
+  if (journal.visitDate) {
+    dbJournal.visit_date = journal.visitDate;
+  }
+  
+  if (journal.photos && journal.photos.length > 0) {
+    dbJournal.photos = journal.photos;
+  }
+  
+  if (journal.highlights && journal.highlights.length > 0) {
+    dbJournal.highlights = journal.highlights;
+  }
+
+  return dbJournal;
 };
 
 const fromDatabase = (journal) => {
