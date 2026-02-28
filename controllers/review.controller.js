@@ -21,10 +21,16 @@ exports.getReviewsByDestination = async (req, res) => {
 
 exports.createReview = async (req, res) => {
   try {
+    console.log('Creating review with data:', req.body);
     const newReview = await Review.create(req.body);
     res.status(201).json(newReview);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create review' });
+    console.error('Error creating review:', error);
+    res.status(500).json({ 
+      error: 'Failed to create review',
+      details: error.message,
+      hint: error.hint || ''
+    });
   }
 };
 

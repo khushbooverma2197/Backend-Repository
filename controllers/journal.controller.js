@@ -31,10 +31,16 @@ exports.getJournalById = async (req, res) => {
 
 exports.createJournal = async (req, res) => {
   try {
+    console.log('Creating journal with data:', req.body);
     const newJournal = await Journal.create(req.body);
     res.status(201).json(newJournal);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create journal' });
+    console.error('Error creating journal:', error);
+    res.status(500).json({ 
+      error: 'Failed to create journal',
+      details: error.message,
+      hint: error.hint || ''
+    });
   }
 };
 
