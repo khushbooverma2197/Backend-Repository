@@ -41,7 +41,7 @@ const fromDatabase = (journal) => {
     highlights: journal.highlights,
     isPublic: journal.is_public,
     createdAt: journal.created_at,
-    destinationName: journal.destination_name // In case it's joined
+    destinationName: journal.destination_name
   };
 };
 
