@@ -1,15 +1,22 @@
 {
-  "name": "backend",
+  "name": "travel-inspiration-backend",
   "version": "1.0.0",
-  "description": "Backend for Module5Project",
+  "description": "Backend for Travel Inspiration Platform",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
-  "keywords": [],
+  "keywords": ["travel", "destinations", "express", "nodejs"],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@supabase/supabase-js": "^2.97.0"
+    "@supabase/supabase-js": "^2.97.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
