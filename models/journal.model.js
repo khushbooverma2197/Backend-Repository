@@ -1,49 +1,52 @@
-// Travel Journal model
-const supabase = require('../config/supabase');
+// Utility to convert between frontend (camelCase) and database (snake_case) for journals
 
-const TABLE = 'journals';
+const toDatabase = (journal) => {
+  const dbJournal = {
+    user_id: journal.userId || 1,
+    title: journal.title,
+    content: journal.content,
+    rating: parseInt(journal.rating) || 5,
+    is_public: Boolean(journal.isPublic)
+  };
 
-exports.getAll = async () => {
-  const { data, error } = await supabase.from(TABLE).select('*');
-  if (error) throw error;
-  return data;
+  // Only add destination_id if provided
+  if (journal.destinationId) {
+    dbJournal.destination_id = journal.destinationId;
+  }
+
+  // Only add optional fields if they have values
+  if (journal.visitDate) {
+    dbJournal.visit_date = journal.visitDate;
+  }
+  
+  if (journal.photos && journal.photos.length > 0) {
+    dbJournal.photos = journal.photos;
+  }
+  
+  if (journal.highlights && journal.highlights.length > 0) {
+    dbJournal.highlights = journal.highlights;
+  }
+
+  return dbJournal;
 };
 
-exports.getByUserId = async (userId) => {
-  const { data, error } = await supabase
-    .from(TABLE)
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
-  if (error) throw error;
-  return data;
+const fromDatabase = (journal) => {
+  if (!journal) return null;
+  
+  return {
+    id: journal.id,
+    destinationId: journal.destination_id,
+    userId: journal.user_id,
+    title: journal.title,
+    content: journal.content,
+    visitDate: journal.visit_date,
+    rating: journal.rating,
+    photos: journal.photos,
+    highlights: journal.highlights,
+    isPublic: journal.is_public,
+    createdAt: journal.created_at,
+    destinationName: journal.destination_name
+  };
 };
 
-exports.getById = async (id) => {
-  const { data, error } = await supabase.from(TABLE).select('*').eq('id', id).single();
-  if (error) throw error;
-  return data;
-};
-
-exports.create = async (journal) => {
-  const { data, error } = await supabase.from(TABLE).insert([journal]).select().single();
-  if (error) throw error;
-  return data;
-};
-
-exports.update = async (id, updates) => {
-  const { data, error } = await supabase
-    .from(TABLE)
-    .update(updates)
-    .eq('id', id)
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
-};
-
-exports.delete = async (id) => {
-  const { data, error } = await supabase.from(TABLE).delete().eq('id', id);
-  if (error) throw error;
-  return data;
-};
+module.exports = { toDatabase, fromDatabase };
