@@ -2,13 +2,17 @@
 
 const toDatabase = (journal) => {
   const dbJournal = {
-    destination_id: journal.destinationId,
     user_id: journal.userId || 1,
     title: journal.title,
     content: journal.content,
     rating: parseInt(journal.rating) || 5,
     is_public: Boolean(journal.isPublic)
   };
+
+  // Only add destination_id if provided
+  if (journal.destinationId) {
+    dbJournal.destination_id = journal.destinationId;
+  }
 
   // Only add optional fields if they have values
   if (journal.visitDate) {
