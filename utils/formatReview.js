@@ -11,9 +11,9 @@ const toDatabase = (review) => {
     dbReview.destination_id = review.destinationId;
   }
 
-  // Only add user_name if provided (not required anymore)
-  if (review.userName) {
-    dbReview.user_name = review.userName;
+  // Only add user_id if it's a valid UUID format (not just "1")
+  if (review.userId && review.userId.length > 10) {
+    dbReview.user_id = review.userId;
   }
 
   // Only add title if provided
@@ -40,13 +40,13 @@ const fromDatabase = (review) => {
     id: review.id,
     destinationId: review.destination_id,
     userId: review.user_id,
-    userName: review.user_name,
     rating: review.rating,
     title: review.title,
     content: review.content,
     photos: review.photos || [],
     tips: review.tips || [],
-    createdAt: review.created_at
+    createdAt: review.created_at,
+    destinationName: review.destination_name
   };
 };
 
