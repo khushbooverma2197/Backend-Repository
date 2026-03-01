@@ -2,12 +2,16 @@
 
 const toDatabase = (journal) => {
   const dbJournal = {
-    user_id: journal.userId || 1,
     title: journal.title,
     content: journal.content,
     rating: parseInt(journal.rating) || 5,
     is_public: Boolean(journal.isPublic)
   };
+
+  // Only add user_id if it's a valid UUID format (not just "1")
+  if (journal.userId && journal.userId.length > 10) {
+    dbJournal.user_id = journal.userId;
+  }
 
   // Only add destination_id if provided
   if (journal.destinationId) {
@@ -27,6 +31,10 @@ const toDatabase = (journal) => {
     dbJournal.highlights = journal.highlights;
   }
 
+  if (journal.tripDates) {
+    dbJournal.trip_dates = journal.tripDates;
+  }
+
   return dbJournal;
 };
 
@@ -41,9 +49,10 @@ const fromDatabase = (journal) => {
     content: journal.content,
     visitDate: journal.visit_date,
     rating: journal.rating,
-    photos: journal.photos,
-    highlights: journal.highlights,
+    photos: journal.photos || [],
+    highlights: journal.highlights || [],
     isPublic: journal.is_public,
+    tripDates: journal.trip_dates,
     createdAt: journal.created_at,
     destinationName: journal.destination_name
   };
