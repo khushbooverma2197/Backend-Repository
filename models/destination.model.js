@@ -52,7 +52,7 @@ exports.getRecommendations = async (interests) => {
   return data;
 };
 
-exports.calculateBudget = async (destinationId, duration, travelers) => {
+exports.calculateBudget = async (destinationId, duration, travelers, accommodationType = 'mid-range', includeFlight = true) => {
   const { data: destination, error } = await supabase
     .from(TABLE)
     .select('name, avg_daily_cost, avg_flight_cost, avg_accommodation_cost, avg_food_cost, avg_activities_cost')
@@ -60,11 +60,19 @@ exports.calculateBudget = async (destinationId, duration, travelers) => {
     .single();
   
   if (error) throw error;
-  
-  const flightCost = (destination.avg_flight_cost || 500) * travelers;
-  const accommodationCost = (destination.avg_accommodation_cost || 100) * duration;
-  const foodCost = (destination.avg_food_cost || 50) * duration * travelers;
-  const activitiesCost = (destination.avg_activities_cost || 75) * duration * travelers;
+
+  // Accommodation type multipliers
+  const accommodationMultipliers = { budget: 0.55, 'mid-range': 1.0, luxury: 2.5 };
+  const foodMultipliers = { budget: 0.7, 'mid-range': 1.0, luxury: 1.8 };
+  const activitiesMultipliers = { budget: 0.7, 'mid-range': 1.0, luxury: 1.8 };
+  const accMul = accommodationMultipliers[accommodationType] || 1.0;
+  const foodMul = foodMultipliers[accommodationType] || 1.0;
+  const actMul = activitiesMultipliers[accommodationType] || 1.0;
+
+  const flightCost = includeFlight ? (destination.avg_flight_cost || 500) * travelers : 0;
+  const accommodationCost = Math.round((destination.avg_accommodation_cost || 100) * duration * accMul);
+  const foodCost = Math.round((destination.avg_food_cost || 50) * duration * travelers * foodMul);
+  const activitiesCost = Math.round((destination.avg_activities_cost || 75) * duration * travelers * actMul);
   
   const totalCost = flightCost + accommodationCost + foodCost + activitiesCost;
   
@@ -72,13 +80,14 @@ exports.calculateBudget = async (destinationId, duration, travelers) => {
     destination: destination.name,
     duration: `${duration} days`,
     travelers,
+    accommodationType,
     breakdown: {
-      flights: flightCost,
+      flights: Math.round(flightCost),
       accommodation: accommodationCost,
       food: foodCost,
       activities: activitiesCost
     },
-    total: totalCost,
+    total: Math.round(totalCost),
     perPerson: Math.round(totalCost / travelers)
   };
 };
