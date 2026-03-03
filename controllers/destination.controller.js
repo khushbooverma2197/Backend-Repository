@@ -54,11 +54,16 @@ exports.getDestinationById = async (req, res) => {
 exports.getBudgetEstimate = async (req, res) => {
   try {
     const { destinationId } = req.params;
-    const { duration, travelers } = req.query;
+    // Support both naming conventions: days/people (frontend) and duration/travelers (legacy)
+    const days = req.query.days || req.query.duration;
+    const people = req.query.people || req.query.travelers;
+    const { accommodationType, includeFlight } = req.query;
     const estimate = await Destination.calculateBudget(
       destinationId,
-      parseInt(duration) || 7,
-      parseInt(travelers) || 1
+      parseInt(days) || 7,
+      parseInt(people) || 1,
+      accommodationType || 'mid-range',
+      includeFlight !== 'false'
     );
     res.json(estimate);
   } catch (error) {
