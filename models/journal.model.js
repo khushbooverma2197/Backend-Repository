@@ -28,7 +28,8 @@ exports.getById = async (id) => {
 
 exports.create = async (journal) => {
   const dbJournal = toDatabase(journal);
-  console.log('Inserting into database:', dbJournal);
+  const photoCount = dbJournal.photos ? dbJournal.photos.length : 0;
+  console.log('Inserting into database (photos:', photoCount, ')');
   const { data, error } = await supabase.from(TABLE).insert([dbJournal]).select().single();
   if (error) {
     console.error('Database error:', error);
@@ -39,7 +40,8 @@ exports.create = async (journal) => {
 
 exports.update = async (id, updates) => {
   const dbUpdates = toDatabase(updates);
-  console.log('Updating database:', dbUpdates);
+  const photoCount = dbUpdates.photos ? dbUpdates.photos.length : 0;
+  console.log('Updating database:', id, '(photos:', photoCount, ')');
   const { data, error } = await supabase
     .from(TABLE)
     .update(dbUpdates)
