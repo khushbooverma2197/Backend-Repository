@@ -8,11 +8,13 @@ app.use(cors());
 app.use(express.json());
 
 // Import and use routes
+const authRoutes = require('./routes/auth.routes');
 const destinationRoutes = require('./routes/destination.routes');
 const userRoutes = require('./routes/user.routes');
 const reviewRoutes = require('./routes/review.routes');
 const journalRoutes = require('./routes/journal.routes');
 
+app.use('/api/auth', authRoutes);
 app.use('/api/destinations', destinationRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/reviews', reviewRoutes);
